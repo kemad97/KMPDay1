@@ -27,6 +27,19 @@ kotlin {
         }
     }
 
+
+    // Explicitly enable XCFramework generation
+    tasks {
+        // This task is often automatically available in newer Kotlin versions
+        // If not, create it
+        register("buildXCFramework") {
+            dependsOn("linkReleaseFrameworkIosArm64")
+            dependsOn("linkReleaseFrameworkIosSimulatorArm64")
+        }
+    }
+
+
+
     sourceSets {
         commonMain.dependencies {
         //put your multiplatform dependencies here
