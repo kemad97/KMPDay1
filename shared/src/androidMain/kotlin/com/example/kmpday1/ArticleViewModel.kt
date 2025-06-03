@@ -1,38 +1,53 @@
 package com.example.kmpday1
 
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 
 actual class ArticleViewModel : BaseViewModel() {
     private val _uiState = MutableStateFlow<ArticleUIState>(ArticleUIState.Loading)
     actual val uiState: StateFlow<ArticleUIState> = _uiState
 
 
-    private val mockArticles = listOf(
-        Article(
-            "Stock market today: Live updates - CNBC",
-            "Futures were higher in premarket trading as Wall Street tried to regain its footing.",
-            "2023-11-09",
-            "https://image.cnbcfm.com/api/v1/image/107326078-1698758530118-gettyimages-1765623456-wall26362_igj6ehhp.jpeg?v=1698758587&w=1920&h=1080"
-        ),
-        Article(
-            "Best iPhone Deals (2023): Carrier Deals, Unlocked iPhones",
-            "Apple's smartphones rarely go on sale, but if you’re looking to upgrade (or you're gift shopping), here are a few cost-saving options.",
-            "2023-11-09",
-            "https://media.wired.com/photos/622aa5c8cca6acf55fb70b57/191:100/w_1280,c_limit/iPhone-13-Pro-Colors-SOURCE-Apple-Gear.jpg"
-        ),
-        Article(
-            "Samsung details ‘Galaxy AI’ and a feature that can translate phone calls in real time",
-            "In a new blog post, Samsung previewed what it calls “a new era of Galaxy AI” coming to its smartphones and detailed a feature that will use artificial intelligence to translate phone calls in real time.",
-            "2023-11-09",
-            "https://cdn.vox-cdn.com/thumbor/Ocz_QcxUdtaexp1pPTMygaqzbR8=/0x0:2000x1333/1200x628/filters:focal(1000x667:1001x668)/cdn.vox-cdn.com/uploads/chorus_asset/file/24396795/DSC04128_processed.jpg"
-        )
-    )
+    private val httpClient = HttpClient {
+        install(ContentNegotiation) {
+            json(Json {
+                prettyPrint = true
+                isLenient = true
+                ignoreUnknownKeys = true
+            })
+        }
+    }
+
+    private val articlesService = ArticlesService(httpClient)
 
     actual fun loadArticles() {
         scope.launch {
-            _uiState.value = ArticleUIState.Success(mockArticles)
+            try {
+                val articlesRaw = articlesService.fetchArticles()
+                val articles = articlesRaw.mapNotNull { raw ->
+                    raw.title?.let { title ->
+                        Article(
+                            title = title,
+                            content = raw.description ?: "",
+                            date = raw.publishedAt ?: "",
+                            imageUrl = raw.urlToImage ?: ""
+                        )
+                    }
+                }
+                _uiState.value = ArticleUIState.Success(articles)
+            } catch (e: Exception) {
+                _uiState.value = ArticleUIState.Error(e.message ?: "Unknown error occurred")
+            }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        httpClient.close()
     }
 }

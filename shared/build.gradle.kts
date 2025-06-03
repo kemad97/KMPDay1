@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
+    kotlin("plugin.serialization") version "1.9.0"
 }
 
 kotlin {
@@ -28,15 +29,7 @@ kotlin {
     }
 
 
-    // Explicitly enable XCFramework generation
-    tasks {
-        // This task is often automatically available in newer Kotlin versions
-        // If not, create it
-        register("buildXCFramework") {
-            dependsOn("linkReleaseFrameworkIosArm64")
-            dependsOn("linkReleaseFrameworkIosSimulatorArm64")
-        }
-    }
+
 
 
 
@@ -50,6 +43,7 @@ kotlin {
             implementation(libs.ktor.client.cio)
             implementation(libs.koin.core)
             implementation(libs.sql.coroutines.extensions)
+
         }
         androidMain.dependencies {
             implementation(libs.androidx.lifecycle.viewmodel.ktx)

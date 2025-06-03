@@ -30,7 +30,6 @@ class MainActivity : ComponentActivity() {
 
                     ArticleScreen(
                         uiState = uiState,
-                        onRefresh = { viewModel.loadArticles() }
                     )
                 }
             }

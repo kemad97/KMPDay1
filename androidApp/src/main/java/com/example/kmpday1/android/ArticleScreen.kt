@@ -19,7 +19,6 @@ import com.example.kmpday1.*
 @Composable
 fun ArticleScreen(
     uiState: ArticleUIState,
-    onRefresh: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -61,9 +60,7 @@ fun ArticleScreen(
                         fontSize = 16.sp
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    Button(onClick = onRefresh) {
-                        Text("Retry")
-                    }
+
                 }
             }
         }
