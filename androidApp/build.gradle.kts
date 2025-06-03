@@ -45,4 +45,6 @@ dependencies {
     debugImplementation(libs.compose.ui.tooling)
     implementation(libs.coil3.coil.compose)
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.2.0")
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
 }

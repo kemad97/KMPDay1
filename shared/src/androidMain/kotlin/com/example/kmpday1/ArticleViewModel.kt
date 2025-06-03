@@ -8,8 +8,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
-actual class ArticleViewModel : BaseViewModel() {
-    private val _uiState = MutableStateFlow<ArticleUIState>(ArticleUIState.Loading)
+actual class ArticleViewModel actual constructor(
+    private val repository: ArticleRepository
+) : BaseViewModel() {    private val _uiState = MutableStateFlow<ArticleUIState>(ArticleUIState.Loading)
     actual val uiState: StateFlow<ArticleUIState> = _uiState
 
 
