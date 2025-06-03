@@ -7,7 +7,7 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 import org.koin.dsl.module
 
-val appModule = module {
+val sharedKoinModule = module {
     single {
         HttpClient {
             install(ContentNegotiation) {
